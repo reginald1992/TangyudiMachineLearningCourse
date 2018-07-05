@@ -6,6 +6,8 @@ from sklearn.cross_validation import train_test_split, KFold, cross_val_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix, recall_score, classification_report
 import itertools
+from imblearn.over_sampling import SMOTE
+from sklearn.ensemble import RandomForestClassifier
 
 data = pd.read_csv("./data/creditcard.csv")
 print(data.head())
@@ -179,4 +181,69 @@ plot_confusion_matrix(cnf_matrix, classes=class_names, title='Confusion matrix')
 plt.show()
 
 best_c = printing_Kfold_scores(x_train, y_train)
+lr = LogisticRegression(C=best_c, penalty='l1')
+lr.fit(x_train, y_train.values.ravel())
+y_test_pred = lr.predict(x_test.values)
 
+# Compute confusion matrix
+cnf_matrix = confusion_matrix(y_test, y_test_pred)
+np.set_printoptions(precision=2)
+
+print("Recall metric in the testing dataset:", cnf_matrix[1, 1] / (cnf_matrix[1, 0] + cnf_matrix[1, 1]))
+
+# Plot non-normalized confusion matrix
+plt.figure()
+plot_confusion_matrix(cnf_matrix, classes=class_names, title='Confusion Matrix')
+plt.show()
+
+lr = LogisticRegression(C=0.01, penalty='l1')
+lr.fit(x_train_undersample, y_train_undersample.values.ravel())
+y_pred_undersample_proba = lr.predict_proba(x_test_undersample.values)
+thresholds = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+plt.figure(figsize=(10, 10))
+j = 1
+for i in thresholds:
+    y_test_prediction_high_recall = y_pred_undersample_proba[:, 1] > i
+    plt.subplot(3, 3, j)
+    j += 1
+#    compute confusion matrix
+    cnf_matrix = confusion_matrix(y_test_undersample, y_test_prediction_high_recall)
+    np.set_printoptions(precision=2)
+    
+    print("Recall metric in the testing dataset: ", cnf_matrix[1, 1]/(cnf_matrix[1, 0] + cnf_matrix[1, 1]))
+
+    # Plot non-normalized confusion matrix
+    
+    plot_confusion_matrix(cnf_matrix, classes=class_names, title='Threshold >=%s'%i) 
+    
+credit_cards = pd.read_csv('./data/creditcard.csv')
+
+columns = credit_cards.columns
+# The labels are in the last column ('Class'). Simply remove it to obtain features columns
+features_columns = columns.delete(len(columns) - 1)
+
+features = credit_cards[features_columns]
+labels = credit_cards['Class']
+
+features_train, features_test, labels_train, labels_test = train_test_split(features, labels, test_size=0.2, random_state=0)
+oversampler = SMOTE(random_state=0)
+os_features, os_labels = oversampler.fit_sample(features_train, labels_train)
+print(len(os_labels[os_labels == 1]))
+os_features = pd.DataFrame(os_features)
+os_labels = pd.DataFrame(os_labels)
+best_c = printing_Kfold_scores(os_features, os_labels)
+
+lr = LogisticRegression(C=best_c, penalty='l1')
+lr.fit(os_features, os_labels.values.ravel())
+y_pred = lr.predict(features_test.values)
+
+# Compute confusion matrix
+cnf_matrix = confusion_matrix(labels_test, y_pred)
+np.set_printoptions(precision=2)
+
+print("Recall metric in the testing dataset: ", cnf_matrix[1, 1]/(cnf_matrix[1, 0]+cnf_matrix[1, 1]))
+
+# Plot non-normalized confusion matrix
+plt.figure()
+plot_confusion_matrix(cnf_matrix, classes=class_names, title='Confusion matrix')
+plt.show()
