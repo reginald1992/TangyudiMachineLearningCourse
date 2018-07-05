@@ -102,7 +102,14 @@ def printing_Kfold_scores(x_train_data, y_train_data):
         print('Mean recall score', np.mean(recall_accs))
         print('')
 
-    best_c = result_table.loc[result_table['Mean recall score'].idxmax()]['C_parameter']
+    best_c = result_table
+    best_c.dtypes.eq(object)  # you can see the type of best_c
+    new = best_c.columns[best_c.dtypes.eq(object)]  # get the object column of the best_c
+    best_c[new] = best_c[new].apply(pd.to_numeric, errors='coerce', axis=0)  # change the type of object
+    best_c = result_table.loc[result_table['Mean recall score'].idxmax()]['C_parameter']  # calculate the mean values
+
+
+    # best_c = result_table.iloc[result_table['Mean recall score'].idxmax()]['C_parameter']
 
     #    Finally, we can check which C parameter is the best amongst the chosen.
     print('*********************************************************************************')
@@ -140,6 +147,7 @@ def plot_confusion_matrix(cm, classes, title='Confusion Matrix', cmap=plt.cm.Blu
     plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
+
 
 lr = LogisticRegression(C=best_c, penalty='l1')
 lr.fit(x_train_undersample, y_train_undersample.values.ravel())
