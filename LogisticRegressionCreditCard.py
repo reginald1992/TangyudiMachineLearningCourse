@@ -110,7 +110,6 @@ def printing_Kfold_scores(x_train_data, y_train_data):
     best_c[new] = best_c[new].apply(pd.to_numeric, errors='coerce', axis=0)  # change the type of object
     best_c = result_table.loc[result_table['Mean recall score'].idxmax()]['C_parameter']  # calculate the mean values
 
-
     # best_c = result_table.iloc[result_table['Mean recall score'].idxmax()]['C_parameter']
 
     #    Finally, we can check which C parameter is the best amongst the chosen.
@@ -173,7 +172,7 @@ y_pred = lr.predict(x_test.values)
 cnf_matrix = confusion_matrix(y_test, y_pred)
 np.set_printoptions(precision=2)
 
-print("Recall metric in the testing dataset: ", cnf_matrix[1, 1]/(cnf_matrix[1, 0] + cnf_matrix[1, 1]))
+print("Recall metric in the testing dataset: ", cnf_matrix[1, 1] / (cnf_matrix[1, 0] + cnf_matrix[1, 1]))
 
 # Plot non-normalized confusion matrix
 plt.figure()
@@ -206,16 +205,16 @@ for i in thresholds:
     y_test_prediction_high_recall = y_pred_undersample_proba[:, 1] > i
     plt.subplot(3, 3, j)
     j += 1
-#    compute confusion matrix
+    #    compute confusion matrix
     cnf_matrix = confusion_matrix(y_test_undersample, y_test_prediction_high_recall)
     np.set_printoptions(precision=2)
-    
-    print("Recall metric in the testing dataset: ", cnf_matrix[1, 1]/(cnf_matrix[1, 0] + cnf_matrix[1, 1]))
+
+    print("Recall metric in the testing dataset: ", cnf_matrix[1, 1] / (cnf_matrix[1, 0] + cnf_matrix[1, 1]))
 
     # Plot non-normalized confusion matrix
-    
-    plot_confusion_matrix(cnf_matrix, classes=class_names, title='Threshold >=%s'%i) 
-    
+
+    plot_confusion_matrix(cnf_matrix, classes=class_names, title='Threshold >=%s' % i)
+
 credit_cards = pd.read_csv('./data/creditcard.csv')
 
 columns = credit_cards.columns
@@ -225,7 +224,8 @@ features_columns = columns.delete(len(columns) - 1)
 features = credit_cards[features_columns]
 labels = credit_cards['Class']
 
-features_train, features_test, labels_train, labels_test = train_test_split(features, labels, test_size=0.2, random_state=0)
+features_train, features_test, labels_train, labels_test = train_test_split(features, labels, test_size=0.2,
+                                                                            random_state=0)
 oversampler = SMOTE(random_state=0)
 os_features, os_labels = oversampler.fit_sample(features_train, labels_train)
 print(len(os_labels[os_labels == 1]))
@@ -241,7 +241,7 @@ y_pred = lr.predict(features_test.values)
 cnf_matrix = confusion_matrix(labels_test, y_pred)
 np.set_printoptions(precision=2)
 
-print("Recall metric in the testing dataset: ", cnf_matrix[1, 1]/(cnf_matrix[1, 0]+cnf_matrix[1, 1]))
+print("Recall metric in the testing dataset: ", cnf_matrix[1, 1] / (cnf_matrix[1, 0] + cnf_matrix[1, 1]))
 
 # Plot non-normalized confusion matrix
 plt.figure()
