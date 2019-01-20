@@ -35,12 +35,13 @@ plt.show()
 （5）descent：进行参数更新
 （6）accuracy：计算精度
 '''
-'''
-sigmoid函数
-'''
 
 
 def sigmoid(z):
+    """
+    :param z: 原始数据
+    :return: SIGMOD函数下的概率值
+    """
     return 1 / (1 + np.exp(-z))
 
 
@@ -48,12 +49,14 @@ nums = np.arange(-10, 10, step=1)
 fig, ax = plt.subplots(figsize=(12, 4))
 ax.plot(nums, sigmoid(nums), 'r')
 plt.show()
-'''
-model:返回预测结果值
-'''
 
 
 def model(x, theta):
+    """
+    :param x:
+    :param theta:
+    :return:
+    """
     return sigmoid(np.dot(x, theta.T))
 
 
@@ -65,23 +68,29 @@ cols = originalData.shape[1]
 x = originalData[:, 0:cols - 1]
 y = originalData[:, cols - 1: cols]
 theta = np.zeros([1, 3])
-'''
-损失函数：将对数似然函数去负号，并求平均损失
-'''
 
 
 def cost(x, y, theta):
+    """
+    损失函数：将对数似然函数去负号，并求平均损失
+    :param x:
+    :param y:
+    :param theta:
+    :return:
+    """
     left = np.multiply(-y, np.log(model(x, theta)))
     right = np.multiply(1 - y, np.log(1 - model(x, theta)))
     return np.sum(left - right) / (len(x))
 
 
-'''
-计算梯度
-'''
-
-
 def gradient(x, y, theta):
+    """
+    计算梯度
+    :param x:
+    :param y:
+    :param theta:
+    :return:
+    """
     grad = np.zeros(theta.shape)
     error = (model(x, theta) - y).ravel()
     for j in range(len(theta.ravel())):
@@ -212,13 +221,14 @@ run_expe(scaled_data, theta, n, STOP_GRAD, thresh=0.02/5, alpha=0.001)
 # 随机梯度下降更快，但是我们需要迭代的次数也需要更多，所以还是用batch的比较合适！！！
 run_expe(scaled_data, theta, 16, STOP_GRAD, thresh=0.02*2, alpha=0.001)
 
-'''
-精度
-'''
 
-
-# 设定阈值
 def predict(x, theta):
+    """
+    设定阈值和精度
+    :param x:
+    :param theta:
+    :return:
+    """
     return [1 if y >= 0.5 else 0 for y in model(x, theta)]
 
 
