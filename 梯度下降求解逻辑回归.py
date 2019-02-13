@@ -39,12 +39,14 @@ The logistic regression
 -  `descent` : 进行参数更新
 -  `accuracy`: 计算精度
 '''
-'''
--`sigmoid` 函数
-'''
 
 
 def sigmoid(z):
+    """
+    sigmod函数
+    :param z: 输入【负无穷，正无穷】
+    :return: 概率【0,1】
+    """
     return 1 / (1 + np.exp(-z))
 
 
@@ -54,12 +56,14 @@ fig, ax = plt.subplots(figsize=(12, 4))
 ax.plot(nums, sigmoid(nums), 'r')
 plt.show()
 
-'''
--'model'：返回预测结果值
-'''
-
 
 def model(X, theta):
+    """
+    构建概率计算模型
+    :param X: 输入的特征
+    :param theta: 特征对应的系数
+    :return: 概率值
+    """
     return sigmoid(np.dot(X, theta.T))
 
 
@@ -76,24 +80,27 @@ y = orig_data[:, cols-1:cols]
 theta = np.zeros([1, 3])
 
 
-'''
-损失函数
-# 将对数似然函数去负号
-'''
-
-
 def cost(X, y, theta):
+    """
+    损失函数
+    :param X:数据
+    :param y:标签
+    :param theta:参数
+    :return:
+    """
     left = np.multiply(-y, np.log(model(X, theta)))
     right = np.multiply(1 - y, np.log(1 - model(X, theta)))
     return np.sum(left - right) / (len(X))
 
 
-'''
-计算梯度
-'''
-
-
 def gradient(X, y, theta):
+    """
+    计算梯度
+    :param X:数据
+    :param y:
+    :param theta:
+    :return:
+    """
     grad = np.zeros(theta.shape)
     error = (model(X, theta) - y).ravel()
     for j in range(len(theta.ravel())):  # for each parmeter
@@ -112,7 +119,13 @@ STOP_GRAD = 2
 
 
 def stopCriterion(type, value, threshold):
-    # 设定三种不同的停止策略
+    """
+    设定不同的停止策略
+    :param type:
+    :param value:
+    :param threshold:
+    :return:
+    """
     if type == STOP_ITER:
         return value > threshold
     elif type == STOP_COST:
@@ -121,8 +134,12 @@ def stopCriterion(type, value, threshold):
         return np.linalg.norm(value) < threshold
 
 
-# 洗牌
 def shuffleData(data):
+    """
+    数据洗牌
+    :param data:
+    :return:
+    """
     np.random.shuffle(data)
     cols = data.shape[1]
     X = data[:, 0:cols-1]
@@ -131,7 +148,16 @@ def shuffleData(data):
 
 
 def descent(data, theta, batchSize, stopType, thresh, alpha):
-    # 梯度下降求解
+    """
+    梯度下降求解
+    :param data:
+    :param theta:
+    :param batchSize:
+    :param stopType:
+    :param thresh:
+    :param alpha:
+    :return:
+    """
     init_time = time.time()
     i = 0  # 迭代次数
     k = 0  # batch
