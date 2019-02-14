@@ -7,7 +7,7 @@
 from PIL import Image, ImageFilter, ImageOps
 
 # 先到相应的路径下加载到这张图片
-img = Image.open('lixuefeng_dog2.jpg')  # jpg和png格式均可
+img = Image.open('lixuefeng_hand.jpg')  # jpg和png格式均可
 
 
 def Formula(a, b, alpha):
