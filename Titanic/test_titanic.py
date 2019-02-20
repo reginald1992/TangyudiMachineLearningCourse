@@ -5,13 +5,13 @@
 # @Date  : 2019/2/18
 # @Desc  : 泰坦尼克号获救问题
 import sys
-
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.model_selection import KFold,  cross_val_score
 from sklearn.ensemble import RandomForestClassifier
+import re
 
 titanic = pd.read_csv("titanic_train.csv")
 print(titanic.head())
@@ -75,3 +75,29 @@ kf = KFold(n_splits=3, random_state=1)
 scores = cross_val_score(alg, titanic[predictors], titanic["Survived"], cv=kf)
 # Take the mean of the scores (because we have one for each fold)
 print(scores.mean())
+# 创造一个家庭人员总数的列 Generating a familysize column
+titanic["FamilySize"] = titanic["SibSp"] + titanic["Parch"]
+# 创建一个名字长度的列 The .apply method generates a new series
+titanic["NameLength"] = titanic["Name"].apply(lambda x: len(x))
+
+
+def get_title(name):
+    """
+    A function to get the title from a name
+    :param name:
+    :return:
+    """
+    # Use a regular expression to search for a title.
+    # Titles always consist of capital and lowercase letters, and end with a period.
+    title_search = re.search('([A-Za-z]+)\.', name)
+    if title_search:
+        return title_search.group(1)
+    return ""
+
+
+# Get all the titles and print how often each one occurs
+titles = titanic["Name"].apply(get_title)
+print(pd.value_counts(titles))
+# Map each title to an integer. Some titles are very rare, and are compressed into the same codes as other titles
+title_mapping = {"Mr": 1, "Miss": 2, "Mrs": 3, "Master": 4, "Dr": 5, "Rev": 6, "Major": 7, "Col": 7, "Mlle": 8,
+                 "Mme": 8, "Don": 9, "Lady": 10, "Countess": 10, "Jonkheer": 10, "Sir": 9, "Capt": 7, "Ms": 2}
