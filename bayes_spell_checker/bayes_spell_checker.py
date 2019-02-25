@@ -72,10 +72,6 @@ def known_edits2(word):
 
 def known(words):
     """
-    正常来说把一个元音拼成另一个的概率要大于辅音 (因为人常常把 hello 打成 hallo 这样);
-    把单词的第一个字母拼错的概率会相对小, 等等.
-    但是为了简单起见, 选择了一个简单的方法: 编辑距离为1的正确单词比编辑距离为2的优先级高,
-    而编辑距离为0的正确单词优先级比编辑距离为1的高.
     :param words:
     :return:
     """
@@ -83,4 +79,18 @@ def known(words):
 
 
 def correct(word):
-    pass
+    """
+    正常来说把一个元音拼成另一个的概率要大于辅音 (因为人常常把 hello 打成 hallo 这样);
+    把单词的第一个字母拼错的概率会相对小, 等等.
+    但是为了简单起见, 选择了一个简单的方法: 编辑距离为1的正确单词比编辑距离为2的优先级高,
+    而编辑距离为0的正确单词优先级比编辑距离为1的高.
+    如果known(set)非空, candidate 就会选取这个集合, 而不继续计算后面的
+    :param word:
+    :return:
+    """
+    candidates = known([word]) or known(edits1(word)) or known_edits2(word) or [word]
+    return max(candidates, key=lambda w: NWORDS[w])
+
+
+if __name__ == '__main__':
+    print(correct("morw"))
