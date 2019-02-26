@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # @File  : lixuefeng_pic.py
-# @Author: Shulin Liu
+# @Author: Li Xuefeng's fan
 # @Date  : 2019/2/13
 # @Desc  :
 from PIL import Image, ImageFilter, ImageOps
@@ -10,7 +10,7 @@ from PIL import Image, ImageFilter, ImageOps
 img = Image.open('lixuefeng_hand.jpg')  # jpg和png格式均可
 
 
-def Formula(a, b, alpha):
+def formula(a, b, alpha):
     return min(int(a * 255 / (256 - b * alpha)), 255)
 
 # 通过双层for循环将图片转换
@@ -27,7 +27,7 @@ def lixuefeng(img, blur=25, alpha=1.0):
         for y in range(height):
             a = img1.getpixel((x, y))
             b = img2.getpixel((x, y))
-            img1.putpixel((x, y), Formula(a, b, alpha))
+            img1.putpixel((x, y), formula(a, b, alpha))
     img1.show()  # 展示图片效果
 
 

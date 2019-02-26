@@ -9,4 +9,6 @@ import jieba
 """
 数据源：http://www.sogou.com/labs/resource/ca.php
 """
-df_news = pd.read_table("val.txt", names=["category", "theme", "URL", "content"], en)
+df_news = pd.read_table("val.txt", names=["category", "theme", "URL", "content"], encoding='utf-8')
+df_news = df_news.dropna()
+print(df_news.head())
