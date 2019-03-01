@@ -4,7 +4,8 @@
 # @Author: Shulin Liu
 # @Date  : 2019/2/24
 # @Desc  : 贝叶斯拼写检查器
-import re, collections
+import re
+import collections
 """
 求解：argmaxc P(c|w) -> argmaxc P(w|c) P(c) / P(w)
 P(c), 文章中出现一个正确拼写词 c 的概率, 也就是说, 在英语文章中, c 出现的概率有多大
