@@ -6,6 +6,11 @@
 # @Desc  : 使用贝叶斯算法实现新闻分类
 import pandas as pd
 import jieba
+import numpy as np
+from wordcloud import WordCloud
+from matplotlib import pyplot as plt
+import matplotlib
+
 """
 数据源：http://www.sogou.com/labs/resource/ca.php
 """
@@ -40,3 +45,19 @@ def drop_stopwords(contents, stopwords):
     return content_clean, all_words
 
 
+contents = df_content.content_s.values.tolist()
+stopwords = stopwords.stopwords.values.tolist()
+content_clean, all_worsd = drop_stopwords(content, stopwords)
+df_content = pd.DataFrame({"content_clean": content_clean})
+df_all_words = pd.DataFrame({"all_words": all_worsd})
+# 统计词频
+words_count = df_all_words.groupby(by=["all_words"])["all_words"].agg({"count": np.size})
+words_count = words_count.reset_index().sort_values(by=["count"], ascending=False)
+# 画出词云
+matplotlib.rcParams['figure.figsize'] = (10.0, 5.0)
+
+wordcloud = WordCloud(font_path="simhei.ttf", background_color="white", max_font_size=80)
+word_frequence = {x[0]: x[1] for x in words_count.head(100).values}
+wordcloud = wordcloud.fit_words(word_frequence)
+plt.imshow(wordcloud)
+plt.show()
