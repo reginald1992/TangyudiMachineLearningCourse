@@ -10,6 +10,7 @@ import numpy as np
 from wordcloud import WordCloud
 from matplotlib import pyplot as plt
 import matplotlib
+import jieba.analyse
 
 """
 数据源：http://www.sogou.com/labs/resource/ca.php
@@ -32,6 +33,12 @@ stopwords = pd.read_csv("stopwords.txt", index_col=False, sep='\t', quoting=3, n
 
 
 def drop_stopwords(contents, stopwords):
+    """
+    去停用词函数
+    :param contents:
+    :param stopwords:
+    :return:去除停用词的内容和所有的非停用词
+    """
     content_clean = []
     all_words = []
     for line in contents:
@@ -55,9 +62,15 @@ words_count = df_all_words.groupby(by=["all_words"])["all_words"].agg({"count": 
 words_count = words_count.reset_index().sort_values(by=["count"], ascending=False)
 # 画出词云
 matplotlib.rcParams['figure.figsize'] = (10.0, 5.0)
-
 wordcloud = WordCloud(font_path="simhei.ttf", background_color="white", max_font_size=80)
 word_frequence = {x[0]: x[1] for x in words_count.head(100).values}
 wordcloud = wordcloud.fit_words(word_frequence)
 plt.imshow(wordcloud)
 plt.show()
+# TF—IDF 提取关键词
+index = 2000
+print(df_news["content"][index])
+content_s_str = "".join(content_s[index])
+print(" ".join(jieba.analyse.extract_tags(content_s_str, topK=5, withWeight=False)))
+# LDA: 主题模型
+# 格式要求：list of list形式，分词好的整个语料
