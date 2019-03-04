@@ -11,6 +11,8 @@ from wordcloud import WordCloud
 from matplotlib import pyplot as plt
 import matplotlib
 import jieba.analyse
+import gensim
+from sklearn.model_selection import train_test_split
 
 """
 数据源：http://www.sogou.com/labs/resource/ca.php
@@ -74,3 +76,53 @@ content_s_str = "".join(content_s[index])
 print(" ".join(jieba.analyse.extract_tags(content_s_str, topK=5, withWeight=False)))
 # LDA: 主题模型
 # 格式要求：list of list形式，分词好的整个语料
+dictionary = gensim.corpora.Dictionary(content_clean)
+# 做映射，相当于词袋
+corpus = [dictionary.doc2bow(sentence) for sentence in content_clean]
+# 类似于Kmeans自己指定K值
+lda = gensim.models.LdaModel(corpus=corpus, id2word=dictionary, num_topics=20)
+print(lda.print_topic(1, topn=5))
+for topic in lda.print_topics(num_topics=20, num_words=5):
+    print(topic[1])
+# 贝叶斯分类器做新闻分类
+df_train = pd.DataFrame({"contents_clean": content_clean, "label": df_news["category"]})
+print(df_train.tail())
+print(df_train.label.unique())
+label_mapping = {'汽车': 0, '财经': 1, '科技': 2, '健康': 3, '体育': 4, '教育': 5, '文化': 6, '军事': 7, '娱乐': 8, '时尚': 9}
+df_train["label"] = df_train["label"].map(label_mapping)
+x_train, x_test, y_train, y_test = train_test_split(df_train["contents_clean"].values, df_train["label"].values,
+                                                    random_state=1)
+# 向量化
+words = []
+for line_index in range(len(x_train)):
+    try:
+        words.append(" ".join(x_train[line_index]))
+    except:
+        print(line_index)
+print(words[0])
+
+# 向量化举例
+from sklearn.feature_extraction.text import CountVectorizer
+texts = ["dog cat fish", "dog cat cat", "fish bird", 'bird']
+cv = CountVectorizer()
+cv_fit = cv.fit_transform(texts)
+print(cv.get_feature_names())
+print(cv_fit.toarray())
+print(cv_fit.toarray().sum(axis=0))
+# 对新闻数据进行向量化
+vec = CountVectorizer(analyzer='word', max_features=4000, lowercase=False)
+vec.fit(words)
+# 使用贝叶斯进行分类
+from sklearn.naive_bayes import MultinomialNB
+classifier = MultinomialNB()
+classifier.fit(vec.transform(words), y_train)
+# 对测试集进行同样的处理
+test_words = []
+for line_index in range(len(x_test)):
+    try:
+        test_words.append(" ".join(x_test[line_index]))
+    except:
+        print(line_index)
+# 进行测试并打分
+result = classifier.score(vec.transform(test_words), y_test)
+print(result)
