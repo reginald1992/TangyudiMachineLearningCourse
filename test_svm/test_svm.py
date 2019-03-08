@@ -122,7 +122,7 @@ plt.scatter(x[:, 0], x[:, 1], c=y, s=50, cmap='autumn')
 plot_svc_decision_function(clf, plot_support=False)
 plt.show()
 
-#加入了新的维度r
+# 加入了新的维度r
 from mpl_toolkits import mplot3d
 r = np.exp(-(x ** 2).sum(1))
 
@@ -167,4 +167,17 @@ for axi, C in zip(ax, [10.0, 0.1]):
                 model.support_vectors_[:, 1],
                 s=300, lw=1, facecolors='none')
     axi.set_title('C = {0:.1f}'.format(C), size=14)
+plt.show()
+'''
+调节gamma值对SVM的影响
+'''
+x, y = make_blobs(n_samples=500, centers=2, random_state=0, cluster_std=1.5)
+fig, ax = plt.subplots(1, 2, figsize=(16, 6))
+fig.subplots_adjust(left=0.0625, right=0.95, wspace=0.1)
+for axi, gamma in zip(ax, [10.0, 0.1]):
+    model = SVC(kernel='rbf', gamma=gamma).fit(x, y)
+    axi.scatter(x[:, 0], x[:, 1], c=y, s=50, cmap='autumn')
+    plot_svc_decision_function(model, axi)
+    axi.scatter(model.support_vectors_[:, 0], model.support_vectors_[:, 1], s=300, lw=1, facecolors='none')
+    axi.set_title('gamma = {0:.1f}'.format(gamma), size=14)
 plt.show()
